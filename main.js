@@ -1,27 +1,28 @@
 import { Task } from './task.js';
 
 const tasksWrapper = document.querySelector('#tasks'); 
-const input = document.querySelector("#task");
-const button = document.querySelector("#insert-task-button");
+const form = document.querySelector('.insert-task-wrapper');
 
 
-//preciso arrumar o html para ser um form e ter automativamente o evento de submit
-button.addEventListener("click", handleClick);
 
 
-const newTask = new Task('treinar', tasksWrapper);
+function handleSubmit(e) {
+  e.preventDefault()
+  const inputValue = e.target[0].value;
 
+  if(!inputValue) {
+    throw new Error('Insira um valor');
+  }
 
-try {
-  newTask.createTask();
+  const newTask = new Task(inputValue, tasksWrapper);
 
-} catch (e) {
-    console.log(e.message)
-}
-
-
-function handleClick() {
-  if(input)
-  input.addEventListener("submit", (e) => console.log(e))
+  try {
+    newTask.createTask();
+  
+  } catch (e) {
+      console.log(e.message)
+  }
   
 }
+
+form.addEventListener('submit',(e) => handleSubmit(e))
