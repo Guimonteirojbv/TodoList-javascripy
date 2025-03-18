@@ -1,56 +1,37 @@
-
+import {Storage} from './Storage';
+import {taskUI} from './taskUi';
 
 
 export class Task {
-    constructor(name, parent) {
-      this.name = name;
+    constructor(parent) {
       this.parent = parent;
+      this.storage = new Storage('tasks');
     }
     
-    
-    createTask() {
-      if (!this.name && !this. parent) {
-        throw new Error('Parâmetros insulficientes');
+    createTask(name) {
+      if (!name) {
+        throw new Error('Nome da tarefa inválido');
       }
-      
-      let div = document.createElement('div');  
-      div.classList.add('task-wrapper');
-      
-      let checkBoxTask = document.createElement('input');
-      checkBoxTask.type = 'checkbox';
-      checkBoxTask.name = this.name;
-      checkBoxTask.id = this.name;
-      checkBoxTask.classList.add('checkbox');
-      
-      let taskName = document.createElement('label');
-      taskName.innerText = this.name;
-      taskName.classList.add('task-description')
-      taskName.setAttribute('for', this.name);
-      
-      //Cria um wrapper para o checkbox e a description.
-      let wrapperCheckDescription = document.createElement('div');
-      wrapperCheckDescription.classList.add('wrapper-check-description');
 
-      wrapperCheckDescription.appendChild(checkBoxTask);
-      wrapperCheckDescription.appendChild(taskName);
+      const cleanedName = name.trim()
 
-      div.appendChild(wrapperCheckDescription);
+      const tasks = this.storage.getTasks();
+
+      if(tasks.some(task => task.description === cleanedName)) {
+        throw new Error('Essa tarefa já existe')
+      }
+
+      const savedTaks = this.storage.saveTasks(cleanedName);
+
+      const lastTaskCreated = savedTaks[savedTaks.length - 1] //pega a ultima task criada
 
 
+      taskUI(lastTaskCreated, this.parent);
+  
+    }
 
-      let EditButton = document.createElement('button');
-      EditButton.innerText = 'editar';
-      EditButton.classList.add('button-edit');
 
-      div.appendChild(EditButton);
-
-      let DeleteButton = document.createElement('button');
-      DeleteButton.innerText = 'excluir';
-      DeleteButton.classList.add('button-delete');
-      
-      div.appendChild(DeleteButton);
-
-      
-      this.parent.appendChild(div);
+    getExistsTask() {
+        return this.storage.getTasks();
     }
 }
